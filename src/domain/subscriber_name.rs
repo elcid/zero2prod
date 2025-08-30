@@ -1,12 +1,7 @@
 use unicode_segmentation::UnicodeSegmentation;
 
-pub struct NewSubscriber {
-    pub email: String,
-    pub name: SubscriberName,
-}
-
 #[derive(Debug)]
-pub struct SubscriberName(pub String);
+pub struct SubscriberName(String);
 
 impl SubscriberName {
     /// Returns an instance of `SubscriberName` if the input satisfies all
@@ -32,12 +27,12 @@ impl SubscriberName {
     }
 
 }
+
 impl AsRef<str> for SubscriberName {
     fn as_ref(&self) -> &str {
         &self.0
     }
 }
-
 #[cfg(test)]
 mod tests {
     use crate::domain::SubscriberName;

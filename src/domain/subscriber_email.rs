@@ -20,10 +20,10 @@ impl AsRef<str> for SubscriberEmail {
 
 #[cfg(test)]
 mod tests {
-    use fake::faker::internet::en::SafeEmail;
-    use fake::Fake;
     use super::SubscriberEmail;
     use claims::assert_err;
+    use fake::Fake;
+    use fake::faker::internet::en::SafeEmail;
 
     #[derive(Debug, Clone)]
     struct ValidEmailFixture(pub String);

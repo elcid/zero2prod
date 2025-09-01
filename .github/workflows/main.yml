@@ -19,6 +19,7 @@ env:
   APP_USER: app
   APP_USER_PWD: secret
   APP_DB_NAME: newsletter
+  DATABASE_URL: postgres://postgres:password@localhost:5432/newsletter
 
 jobs:
   test:

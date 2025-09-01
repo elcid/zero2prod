@@ -19,10 +19,7 @@ impl EmailClient {
         authorization_token: SecretString,
         timeout: std::time::Duration,
     ) -> Self {
-        let http_client = Client::builder()
-            .timeout(timeout)
-            .build()
-            .unwrap();
+        let http_client = Client::builder().timeout(timeout).build().unwrap();
         Self {
             http_client,
             base_url,
@@ -47,8 +44,7 @@ impl EmailClient {
                     // in each of them
                     self.base_url.parse().context("failed to parse URL")?,
                 )
-                .client(self.http_client.clone()
-                )
+                .client(self.http_client.clone())
                 .build(),
         );
 
@@ -68,12 +64,12 @@ impl EmailClient {
 
 #[cfg(test)]
 mod tests {
-    use claims::{assert_err, assert_ok};
     use crate::domain::SubscriberEmail;
     use crate::email_client::EmailClient;
+    use claims::{assert_err, assert_ok};
+    use fake::Fake;
     use fake::faker::internet::en::SafeEmail;
     use fake::faker::lorem::en::{Paragraph, Sentence};
-    use fake::Fake;
     use secrecy::SecretString;
     use wiremock::matchers::{any, header, header_exists, method, path};
     use wiremock::{Mock, MockServer, ResponseTemplate};
@@ -88,22 +84,21 @@ mod tests {
             .and(header("Content-Type", "application/json"))
             .and(path("/emails"))
             .and(method("POST"))
-            .respond_with(
-                ResponseTemplate::new(200)
-                    .set_body_json(serde_json::json!({
-                        "id": "b1946ac9-46c4-4c8e-8b8a-8e1e8c8d8f8e",
-                        "from": "test@example.com",
-                        "to": ["recipient@example.com"],
-                        "created_at": "2023-01-01T00:00:00.000Z"
-                    }))
-            )
+            .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                "id": "b1946ac9-46c4-4c8e-8b8a-8e1e8c8d8f8e",
+                "from": "test@example.com",
+                "to": ["recipient@example.com"],
+                "created_at": "2023-01-01T00:00:00.000Z"
+            })))
             .expect(1)
             .mount(&mock_server)
             .await;
 
         // Act
-        let result = email_client.send_email(email(), &subject(), &content(), &content()).await;
-        
+        let result = email_client
+            .send_email(email(), &subject(), &content(), &content())
+            .await;
+
         // Assert
         assert!(result.is_ok(), "Email sending failed: {:?}", result);
     }
@@ -115,15 +110,12 @@ mod tests {
         let email_client = email_client(mock_server.uri());
 
         Mock::given(any())
-            .respond_with(
-                ResponseTemplate::new(200)
-                    .set_body_json(serde_json::json!({
-                        "id": "b1946ac9-46c4-4c8e-8b8a-8e1e8c8d8f8e",
-                        "from": "test@example.com",
-                        "to": ["recipient@example.com"],
-                        "created_at": "2023-01-01T00:00:00.000Z"
-                    }))
-            )
+            .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                "id": "b1946ac9-46c4-4c8e-8b8a-8e1e8c8d8f8e",
+                "from": "test@example.com",
+                "to": ["recipient@example.com"],
+                "created_at": "2023-01-01T00:00:00.000Z"
+            })))
             .expect(1)
             .mount(&mock_server)
             .await;
@@ -144,15 +136,12 @@ mod tests {
         let email_client = email_client(mock_server.uri());
 
         Mock::given(any())
-            .respond_with(
-                ResponseTemplate::new(500)
-                    .set_body_json(serde_json::json!({
-                        "id": "b1946ac9-46c4-4c8e-8b8a-8e1e8c8d8f8e",
-                        "from": "test@example.com",
-                        "to": ["recipient@example.com"],
-                        "created_at": "2023-01-01T00:00:00.000Z"
-                    }))
-            )
+            .respond_with(ResponseTemplate::new(500).set_body_json(serde_json::json!({
+                "id": "b1946ac9-46c4-4c8e-8b8a-8e1e8c8d8f8e",
+                "from": "test@example.com",
+                "to": ["recipient@example.com"],
+                "created_at": "2023-01-01T00:00:00.000Z"
+            })))
             .expect(1)
             .mount(&mock_server)
             .await;
@@ -182,7 +171,7 @@ mod tests {
                         "from": "test@example.com",
                         "to": ["recipient@example.com"],
                         "created_at": "2023-01-01T00:00:00.000Z"
-                    }))
+                    })),
             )
             .expect(1)
             .mount(&mock_server)

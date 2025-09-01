@@ -6,11 +6,11 @@ on:
   # this specific branch (a.k.a. book chapter).
   push:
     branches:
-      - main
+      - root-chapter-04
   pull_request:
     types: [opened, synchronize, reopened]
     branches:
-      - main
+      - root-chapter-04
 
 env:
   CARGO_TERM_COLOR: always
@@ -35,10 +35,6 @@ jobs:
           POSTGRES_DB: postgres
         ports:
           - 5432:5432
-      redis:
-        image: redis:7
-        ports:
-          - 6379:6379
     steps:
       # Downloads a copy of the code in your repository before running CI tests
       - name: Check out repository code
@@ -102,6 +98,12 @@ jobs:
     name: Clippy
     runs-on: ubuntu-latest
     env:
+      # This environment variable forces sqlx to use its offline mode,
+      # which means that it will not attempt to connect to a database
+      # when running the tests. It'll instead use the cached query results.
+      # We check that the cached query results are up-to-date in another job,
+      # to speed up the overall CI pipeline.
+      # This will all be covered in detail in chapter 5.
       SQLX_OFFLINE: true
     steps:
       - uses: actions/checkout@v4
@@ -124,10 +126,6 @@ jobs:
           POSTGRES_DB: postgres
         ports:
           - 5432:5432
-      redis:
-        image: redis:7
-        ports:
-          - 6379:6379
     steps:
       - uses: actions/checkout@v4
       - name: Install the Rust toolchain
